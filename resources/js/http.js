@@ -1,0 +1,39 @@
+import axios from 'axios';
+
+window.axios = axios;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+
+let baseUrl;
+
+if (window.location.host.includes('laravel-vue-boilerplate.lan')) {
+    baseUrl = 'http://laravel-vue-boilerplate.lan:8000/api';
+} else {
+    baseUrl = 'https://production-url.cz/api';
+}
+
+if (localStorage.getItem('token')) {
+    window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+}
+
+let myAxios = window.axios.create({
+    baseURL: baseUrl,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+});
+
+myAxios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response.status === 401) {
+            localStorage.removeItem('token');
+            axios.defaults.headers.common['Authorization'] = '';
+            window.location.replace('/login');
+        }
+        return Promise.reject(error);
+    }
+);
+
+window.http = myAxios;
