@@ -8,6 +8,9 @@ import GeneralSettings from "./views/settings/GeneralSettings.vue";
 import Home from "./views/home/Home.vue";
 import SettingsOne from "./views/settings/SettingsOne.vue";
 import SettingsTwo from "./views/settings/SettingsTwo.vue";
+import Register from "./views/auth/Register.vue";
+import ForgottenPassword from "./views/auth/ForgottenPassword.vue";
+import PasswordReset from "./views/auth/PasswordReset.vue";
 
 const routes = [
     {
@@ -29,6 +32,9 @@ const routes = [
         component: AuthLayout,
         children: [
             {path: "/login", name: "Login", component: Login},
+            {path: "/register", name: "Register", component: Register},
+            {path: "/forgotten-password", name: "ForgottenPassword", component: ForgottenPassword},
+            {path: "/password-reset/:reset_token", name: "PasswordReset", component: PasswordReset},
         ],
     },
     {
@@ -46,7 +52,7 @@ const router = createRouter({
 
 // Update the document title on each route change
 router.beforeEach((to, from, next) => {
-    if (to.name !== 'Login' && to.name !== 'Register' && !localStorage.getItem('token')) {
+    if (!['Login', 'Register', 'ForgottenPassword', 'PasswordReset'].includes(to.name) && !localStorage.getItem('token')) {
         next({name: 'Login'});
     }
     document.title = to.meta.title || 'Laravel Vue Boilerplate';

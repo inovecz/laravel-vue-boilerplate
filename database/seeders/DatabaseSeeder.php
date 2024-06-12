@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'username' => 'admin',
+            'first_name' => 'Vue',
+            'last_name' => 'Admin',
+            'email' => 'admin@vue.com',
             'password' => 'admin',
         ]);
 

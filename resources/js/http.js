@@ -1,28 +1,29 @@
 import axios from 'axios';
 
 window.axios = axios;
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-
-let baseUrl;
-
-if (window.location.host.includes('laravel-vue-boilerplate.lan')) {
-    baseUrl = 'http://laravel-vue-boilerplate.lan:8000/api';
-} else {
-    baseUrl = 'https://production-url.cz/api';
-}
-
-if (localStorage.getItem('token')) {
-    window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
-}
+const baseUrl = import.meta.env.VITE_APP_URL + '/api';
 
 let myAxios = window.axios.create({
     baseURL: baseUrl,
     headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     }
 });
+
+myAxios.interceptors.request.use(
+    config => {
+        if (localStorage.getItem('token')) {
+            config.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 myAxios.interceptors.response.use(
     response => response,

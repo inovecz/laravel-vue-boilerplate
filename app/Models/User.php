@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\ArrayableTrait;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable implements JWTSubject
@@ -23,10 +24,32 @@ class User extends Authenticatable implements JWTSubject
     }
     // </editor-fold desc="Region: STATE DEFINITION">
 
-    // <editor-fold desc="Region: GETTERS">
-    public function getUsername(): string
+    // <editor-fold desc="Region: RELATIONS">
+    public function passwordResetTokens(): HasMany
     {
-        return $this->username;
+        return $this->hasMany(PasswordResetToken::class);
+    }
+    // </editor-fold desc="Region: RELATIONS">
+
+    // <editor-fold desc="Region: GETTERS">
+    public function getFirstName(): string
+    {
+        return $this->first_name;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->last_name;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPasswordResetToken(): ?string
+    {
+        return $this->passwordResetTokens()->where('created_at', '>=', now()->subMinutes(30))->latest()->first()?->getToken();
     }
     // </editor-fold desc="Region: GETTERS">
 
@@ -35,7 +58,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'id' => $this->getId(),
-            'username' => $this->getUsername(),
+            'first_name' => $this->getFirstName(),
+            'last_name' => $this->getLastName(),
+            'email' => $this->getEmail(),
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
@@ -51,7 +76,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'user_id' => $this->getId(),
-            'username' => $this->getUsername(),
+            'email' => $this->getEmail(),
         ];
     }
     // </editor-fold desc="Region: JWT">
